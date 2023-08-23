@@ -34,15 +34,25 @@ public class Dock extends CommandBase{
     double pitch = m_drive.getPitch();
     double pidOutput = m_PID.calculate(pitch, 0);
 
+    //if the current state is not balanced and the pitch angle gets within 
+    //7deg of horizontal then record the current time and set state to balanced
     if(Math.abs(pitch) <= 7.0 && !balance){
         timeBalance = m_timer.get();
         balance = true;
-    }else if(Math.abs(pitch) > 7.0 && balance && m_timer.get() - timeBalance > 1.0){
+    }
+    //Otherwise if it has been over 1 second and the state is set to balanced but the pitch angle now 
+    //exceeds 7deg then set state to not balanced and begin allowing PID to correct angle
+    else if(Math.abs(pitch) > 7.0 && balance && m_timer.get() - timeBalance > 1.0){
         balance = false;
         m_drive.drive(-1.0*pidOutput, 0.0, 0.0, false, false);
-    }else if(Math.abs(pitch) > 7.0 && !balance){
+    }
+    //Otherwise if the state is not balanced and the pitch exceeds 7deg then allow PID to correct angle
+    else if(Math.abs(pitch) > 7.0 && !balance){
         m_drive.drive(-1.0*pidOutput, 0.0, 0.0, false, false);
     }
+    //Otherwise if the pitch is less than 7deg set the speed output to 0, 
+    //while this is true, if it also passes 1s from when the pitch was last balanced then
+    //end the command because we are stablilized on the charge station
     else if(Math.abs(pitch) <= 7.0){  
         m_drive.drive(0, 0, 0, false, false);
         if(m_timer.get() - timeBalance > 1.0){
