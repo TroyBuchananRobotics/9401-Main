@@ -34,8 +34,20 @@ public class Claw extends SubsystemBase{
         m_velocity = velocity;
     }
 
+    public void zero(){
+        m_encoder.setPosition(0.0);
+    }
+
     public double getVelocity(){
         return m_encoder.getVelocity();
+    }
+
+    public double getAppliedCurrent(){
+        return m_motor.getAppliedOutput();
+    }
+
+    public double getPose(){
+        return m_encoder.getPosition();
     }
 
     @Override

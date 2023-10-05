@@ -43,6 +43,10 @@ public class Elevator extends SubsystemBase {
         m_position = position;
     }
 
+    public void zero(){
+        m_encoder.setPosition(0.0);
+    }
+
     public double getPosition(){
         return m_encoder.getPosition();
     }

@@ -77,7 +77,9 @@ public class RobotContainer {
 
   private void configureAutoEvents() {
     events.put("GoToHigh", new InstantCommand(()->m_elevator.setPosition(81.0))
-      .alongWith(new InstantCommand(()->m_wrist.setPosition(45.0))));
+      .alongWith(new InstantCommand(()->m_wrist.setPosition(16.0)))
+      .andThen(new WaitCommand(0.75))
+      .andThen(new InstantCommand(()->m_wrist.setPosition(45.0))));
   
     events.put("GoToMid", new InstantCommand(()->m_elevator.setPosition(52.0))
       .alongWith(new InstantCommand(()->m_wrist.setPosition(45.0))));
@@ -106,7 +108,9 @@ public class RobotContainer {
 
     events.put("ScoreCone", new InstantCommand(()->m_claw.setVelocity(1500))
       .andThen(new WaitCommand(0.25))
-      .andThen(()->m_claw.setVelocity(0.0)));
+      .andThen(()->m_claw.setVelocity(0.0))
+      .andThen(new InstantCommand(()->m_wrist.setPosition(4.0)))
+      .andThen(new WaitCommand(0.25)));
 
     events.put("ScoreCube", new InstantCommand(()->m_claw.setVelocity(-2000))
       .andThen(new WaitCommand(0.25))
@@ -123,10 +127,14 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothin", new WaitCommand(20.0));
 
     for (File auto : m_autoPathFiles) {
-      
+      if(auto.getName().contains("Bump")){
         m_chooser.addOption(
           auto.getName(), 
-          autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 2.0, 2.0)));
+          autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 1.0, 2.5)));
+      } else{
+        m_chooser.addOption(
+          auto.getName(), 
+          autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 2.5, 2.5)));}
     }
     SmartDashboard.putData(m_chooser);
   }
@@ -181,7 +189,7 @@ public class RobotContainer {
     new JoystickRightTrigger(m_driverController).onTrue(new InstantCommand(()->m_claw.setVelocity(-4000))).onFalse(new InstantCommand(()->m_claw.setVelocity(-500.0)));
     
     new JoystickButton(m_driverController, Button.kX.value)
-          .onTrue(new InstantCommand(()->m_elevator.setPosition(81.0))
+          .onTrue(new InstantCommand(()->m_elevator.setPosition(81.4))
             .alongWith(new InstantCommand(()->m_wrist.setPosition(50.0)))
             .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 8.0)))
             .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.5))));
@@ -199,8 +207,8 @@ public class RobotContainer {
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
     
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
-      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.2))
-          .alongWith(new InstantCommand(()->m_wrist.setPosition(48.2)))
+      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.4))
+          .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
           .alongWith(new InstantCommand(()->m_claw.setVelocity(2500.0)))
           .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
           .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))))
@@ -221,5 +229,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
+  }
+    /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getTestCommand() {
+    return new InstantCommand(()->m_elevator.zero()).alongWith(new InstantCommand(()->m_claw.zero()));
   }
 }
