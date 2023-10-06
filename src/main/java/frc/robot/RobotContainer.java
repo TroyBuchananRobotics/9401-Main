@@ -5,14 +5,12 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.Dock;
 import frc.robot.commands.DriveByController;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ZeroRoutine;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Wrist;
 import frc.robot.utilities.JoystickLeftTrigger;
 import frc.robot.utilities.JoystickRightTrigger;
@@ -28,7 +26,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -49,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Drivetrain m_drive = new Drivetrain();
   private final XboxController m_driverController = new XboxController(OperatorConstants.kDriverControllerPort);
   private final XboxController m_operatorController = new XboxController(OperatorConstants.kOperatorControllerPort);
@@ -195,8 +191,8 @@ public class RobotContainer {
             .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.5))));
     
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.2))
-        .alongWith(new InstantCommand(()->m_wrist.setPosition(48.2)))
+      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
+        .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
         .alongWith(new InstantCommand(()->m_claw.setVelocity(-4000.0)))
         .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))))
@@ -207,7 +203,7 @@ public class RobotContainer {
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
     
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
-      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.4))
+      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
           .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
           .alongWith(new InstantCommand(()->m_claw.setVelocity(2500.0)))
           .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
@@ -220,7 +216,8 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kA.value).whileTrue(m_dock);
 
-  }
+    new JoystickButton(m_driverController, Button.kStart.value).onTrue(new ZeroRoutine(m_wrist));
+    }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -236,6 +233,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getTestCommand() {
-    return new InstantCommand(()->m_elevator.zero()).alongWith(new InstantCommand(()->m_claw.zero()));
+    return new ZeroRoutine(m_wrist);
   }
 }

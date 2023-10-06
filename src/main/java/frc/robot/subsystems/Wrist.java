@@ -25,6 +25,8 @@ public class Wrist extends SubsystemBase{
     private final static double m_offset = -43.0;
     private final static double m_conversion = 0.059573905;
 
+    private boolean m_enablePID = true;
+
     private double m_position = 2;
     
     public Wrist(){
@@ -35,10 +37,15 @@ public class Wrist extends SubsystemBase{
         m_motor.setInverted(true);
         m_motor.setOpenLoopRampRate(0.10);
         m_motor.setClosedLoopRampRate(0.10);
-        m_motor.setIdleMode(IdleMode.kCoast);
+        m_motor.setIdleMode(IdleMode.kBrake);
         m_encoder.setPositionConversionFactor(1.0);
         m_encoder.setVelocityConversionFactor(1.0);
-        m_PID.setP(0.25);
+        m_PID.setP(0.0001);
+        m_PID.setFF(0.00017);
+
+        m_PID.setSmartMotionMaxAccel(8000, 0);
+        m_PID.setSmartMotionMaxVelocity(5800, 0);
+
 
         m_motor.burnFlash();
     }
@@ -47,15 +54,43 @@ public class Wrist extends SubsystemBase{
         m_position = poisition;
     }
 
+    public void zero(){
+        m_motor.set(-0.25);
+    }
+
+    public void disablePID(){
+        m_motor.stopMotor();
+        m_enablePID = false;
+    }
+
+    public void enablePID(){
+        m_enablePID = true;
+    }
+
+    public double getCurrent(){
+        return m_motor.getOutputCurrent();
+    }
+
     public double getPosition(){
         return m_encoder.getPosition();
+    }
+
+    public void setZero(){
+        m_motor.stopMotor();
+        m_encoder.setPosition(-2.1);
     }
 
     @Override
     public void periodic(){
         double ff = m_ff.calculate(m_conversion*(getPosition()+m_offset), 0.0);
-        m_PID.setReference(m_position,ControlType.kPosition,0,ff);
+
+
+        if(m_enablePID){
+            m_PID.setReference(m_position,ControlType.kSmartMotion,0);
+        }
+        
         SmartDashboard.putNumber("Wrist Pose",getPosition());
+        SmartDashboard.putNumber("Output Current", getCurrent());
 
     }
 }
