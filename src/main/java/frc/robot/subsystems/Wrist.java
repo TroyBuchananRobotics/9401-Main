@@ -35,16 +35,16 @@ public class Wrist extends SubsystemBase{
         m_motor.setSoftLimit(SoftLimitDirection.kReverse, (float)1.0 );
         m_motor.setSoftLimit(SoftLimitDirection.kForward, (float)60.0 );
         m_motor.setInverted(true);
-        m_motor.setOpenLoopRampRate(0.10);
-        m_motor.setClosedLoopRampRate(0.10);
+        m_motor.setOpenLoopRampRate(0.00);
+        m_motor.setClosedLoopRampRate(0.00);
         m_motor.setIdleMode(IdleMode.kBrake);
         m_encoder.setPositionConversionFactor(1.0);
         m_encoder.setVelocityConversionFactor(1.0);
-        m_PID.setP(0.0001);
-        m_PID.setFF(0.00017);
+        m_PID.setP(0.00005);
+        m_PID.setFF(0.00018);
 
-        m_PID.setSmartMotionMaxAccel(8000, 0);
-        m_PID.setSmartMotionMaxVelocity(5800, 0);
+        m_PID.setSmartMotionMaxAccel(20000, 0);
+        m_PID.setSmartMotionMaxVelocity(6000, 0);
 
 
         m_motor.burnFlash();
@@ -77,7 +77,7 @@ public class Wrist extends SubsystemBase{
 
     public void setZero(){
         m_motor.stopMotor();
-        m_encoder.setPosition(-2.1);
+        m_encoder.setPosition(-0.7);
     }
 
     @Override

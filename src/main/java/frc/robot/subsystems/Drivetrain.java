@@ -63,29 +63,26 @@ public class Drivetrain extends SubsystemBase {
   private SlewRateLimiter m_slewY = new SlewRateLimiter(2.0);
   private SlewRateLimiter m_slewRot = new SlewRateLimiter(12.0);
 
-  // Creates a swerveModule object for the front left swerve module feeding in
-  // parameters from the constants file
-  private final SwerveModule m_frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort,
-      DriveConstants.kFrontLeftTurningMotorPort, DriveConstants.kFrontLeftTurningEncoderPort,
-      DriveConstants.kFrontLeftOffset, DriveConstants.kFrontLeftTuningVals, DriveConstants.kUseNEO);
-
-  // Creates a swerveModule object for the front right swerve module feeding in
-  // parameters from the constants file
-  private final SwerveModule m_frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort,
-      DriveConstants.kFrontRightTurningMotorPort, DriveConstants.kFrontRightTurningEncoderPort,
-      DriveConstants.kFrontRightOffset, DriveConstants.kFrontRightTuningVals, DriveConstants.kUseNEO);
-
-  // Creates a swerveModule object for the back left swerve module feeding in
-  // parameters from the constants file
-  private final SwerveModule m_backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort,
-      DriveConstants.kBackLeftTurningMotorPort, DriveConstants.kBackLeftTurningEncoderPort,
-      DriveConstants.kBackLeftOffset, DriveConstants.kBackLeftTuningVals, DriveConstants.kUseNEO);
-
-  // Creates a swerveModule object for the back right swerve module feeding in
-  // parameters from the constants file
-  private final SwerveModule m_backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
-      DriveConstants.kBackRightTurningMotorPort, DriveConstants.kBackRightTurningEncoderPort,
-      DriveConstants.kBackRightOffset, DriveConstants.kBackRightTuningVals, DriveConstants.kUseNEO);
+    // Create MAXSwerveModules
+    private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
+        DriveConstants.kFrontLeftDrivingCanId,
+        DriveConstants.kFrontLeftTurningCanId,
+        DriveConstants.kFrontLeftChassisAngularOffset);
+  
+    private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
+        DriveConstants.kFrontRightDrivingCanId,
+        DriveConstants.kFrontRightTurningCanId,
+        DriveConstants.kFrontRightChassisAngularOffset);
+  
+    private final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
+        DriveConstants.kRearLeftDrivingCanId,
+        DriveConstants.kRearLeftTurningCanId,
+        DriveConstants.kBackLeftChassisAngularOffset);
+  
+    private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
+        DriveConstants.kRearRightDrivingCanId,
+        DriveConstants.kRearRightTurningCanId,
+        DriveConstants.kBackRightChassisAngularOffset);
 
   // Creates an ahrs gyro (NavX) on the MXP port of the RoboRIO
   private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -183,10 +180,10 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("Accel Y", m_fieldRelAccel.ay);
     // SmartDashboard.putNumber("Alpha", m_fieldRelAccel.alpha);
 
-     SmartDashboard.putNumber("Front Left Encoder", m_frontLeft.getTurnEncoder());
-     SmartDashboard.putNumber("Front Right Encoder",m_frontRight.getTurnEncoder());
-     SmartDashboard.putNumber("Back Left Encoder", m_backLeft.getTurnEncoder());
-     SmartDashboard.putNumber("Back Right Encoder", m_backRight.getTurnEncoder());
+     SmartDashboard.putNumber("Front Left Speed", m_frontLeft.getState().speedMetersPerSecond);
+     SmartDashboard.putNumber("Front Right Speed",m_frontRight.getState().speedMetersPerSecond);
+     SmartDashboard.putNumber("Back Left Speed", m_rearLeft.getState().speedMetersPerSecond);
+     SmartDashboard.putNumber("Back Right Speed", m_rearRight.getState().speedMetersPerSecond);
 
      //SmartDashboard.putNumber("Front Left Speed", m_frontLeft.getState().speedMetersPerSecond);
      //SmartDashboard.putNumber("Front Right Speed",m_frontRight.getState().speedMetersPerSecond);
@@ -200,6 +197,14 @@ public class Drivetrain extends SubsystemBase {
     getPose();
   }
 
+  public void stop(){
+    m_rearLeft.setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0.0)));
+    m_rearRight.setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0.0)));
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0.0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0.0)));
+
+  }
+
   /**
    * Sets the swerve ModuleStates.
    *
@@ -209,18 +214,23 @@ public class Drivetrain extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
-    m_backLeft.setDesiredState(desiredStates[2]);
-    m_backRight.setDesiredState(desiredStates[3]);
+    m_rearLeft.setDesiredState(desiredStates[2]);
+    m_rearRight.setDesiredState(desiredStates[3]);
   }
 
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
     SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(secondOrderKinematics(chassisSpeeds));
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_desStates = desiredStates;
+    SmartDashboard.putNumber("Front Left Desired", desiredStates[0].speedMetersPerSecond);
+    SmartDashboard.putNumber("Front Right Desired",desiredStates[1].speedMetersPerSecond);
+    SmartDashboard.putNumber("Back Left Desired", desiredStates[2].speedMetersPerSecond);
+    SmartDashboard.putNumber("Back Right Desired", desiredStates[3].speedMetersPerSecond);
+
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
-    m_backLeft.setDesiredState(desiredStates[2]);
-    m_backRight.setDesiredState(desiredStates[3]);
+    m_rearLeft.setDesiredState(desiredStates[2]);
+    m_rearRight.setDesiredState(desiredStates[3]);
   }
 
   public ChassisSpeeds secondOrderKinematics(ChassisSpeeds chassisSpeeds){
@@ -246,20 +256,6 @@ public class Drivetrain extends SubsystemBase {
             twistForPose.dy / LOOP_TIME_S,
             twistForPose.dtheta / LOOP_TIME_S);
     return updatedSpeeds;
-  }
-
-  public void stop() {
-    m_frontLeft.stop();
-    m_frontRight.stop();
-    m_backLeft.stop();
-    m_backRight.stop();
-  }
-
-  public void enableBrakeMode(boolean enable){
-      m_frontLeft.enableBrake(enable);
-      m_frontRight.enableBrake(enable);
-      m_backLeft.enableBrake(enable);
-      m_backRight.enableBrake(enable);
   }
 
   public double getRoll() {
@@ -384,8 +380,8 @@ public class Drivetrain extends SubsystemBase {
    */
   public ChassisSpeeds getChassisSpeed() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(), m_frontRight.getState(),
-        m_backLeft.getState(),
-        m_backRight.getState());
+        m_rearLeft.getState(),
+        m_rearRight.getState());
   }
   
   public ChassisSpeeds getCorDesChassisSpeed() {
@@ -397,8 +393,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public SwerveModulePosition[] getModulePositions(){
-    return new SwerveModulePosition[] {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(),
-      m_backRight.getPosition()};
+    return new SwerveModulePosition[] {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_rearLeft.getPosition(),
+      m_rearRight.getPosition()};
   }
 
     /**
@@ -454,4 +450,4 @@ public class Drivetrain extends SubsystemBase {
      scaleFactor = factor;
   }
 
-}
+  }

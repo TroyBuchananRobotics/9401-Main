@@ -127,7 +127,11 @@ public class RobotContainer {
         m_chooser.addOption(
           auto.getName(), 
           autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 1.0, 2.5)));
-      } else{
+       }else if(auto.getName().contains("Fast")){
+        m_chooser.addOption(
+          auto.getName(), 
+          autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 3.0, 3.0)));
+        }else{
         m_chooser.addOption(
           auto.getName(), 
           autoBuilder.fullAuto(PathPlanner.loadPathGroup(auto.getName().replace(".path", ""), 2.5, 2.5)));}
@@ -153,65 +157,65 @@ public class RobotContainer {
 
     new JoystickButton(m_operatorController, Button.kA.value)
     .onTrue(new InstantCommand(()->m_elevator.setPosition(15.0))
-      .alongWith(new InstantCommand(()->m_wrist.setPosition(48.2)))
-      .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+      .alongWith(new InstantCommand(()->m_wrist.setPosition(47.2)))
+      .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
       .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
 
     new JoystickButton(m_operatorController, Button.kB.value)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(4.0))
         .alongWith(new InstantCommand(()->m_wrist.setPosition(4.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
 
     new JoystickButton(m_driverController, Button.kB.value)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(4.0))
         .alongWith(new InstantCommand(()->m_wrist.setPosition(4.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
 
     new JoystickButton(m_operatorController, Button.kY.value)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(52.0))
-        .alongWith(new InstantCommand(()->m_wrist.setPosition(45.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(6.0, 10.0)))
-        .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.75))));
+        .alongWith(new InstantCommand(()->m_wrist.setPosition(44.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(6.0, 11.0)))
+        .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.6))));
 
     new JoystickRightTrigger(m_operatorController)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(81.0))
-        .alongWith(new InstantCommand(()->m_wrist.setPosition(45.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 8.0)))
-        .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.5))));
+        .alongWith(new InstantCommand(()->m_wrist.setPosition(44.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 9.0)))
+        .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.35))));
 
     new JoystickLeftTrigger(m_driverController).onTrue(new InstantCommand(()->m_claw.setVelocity(1500))).onFalse(new InstantCommand(()->m_claw.setVelocity(100.0)));
     new JoystickRightTrigger(m_driverController).onTrue(new InstantCommand(()->m_claw.setVelocity(-4000))).onFalse(new InstantCommand(()->m_claw.setVelocity(-500.0)));
     
     new JoystickButton(m_driverController, Button.kX.value)
           .onTrue(new InstantCommand(()->m_elevator.setPosition(81.4))
-            .alongWith(new InstantCommand(()->m_wrist.setPosition(50.0)))
-            .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 8.0)))
-            .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.5))));
+            .alongWith(new InstantCommand(()->m_wrist.setPosition(48.5)))
+            .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 9.0)))
+            .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.35))));
     
     new JoystickButton(m_driverController, Button.kRightBumper.value)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
         .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
         .alongWith(new InstantCommand(()->m_claw.setVelocity(-4000.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))))
       .onFalse(new InstantCommand(()->m_elevator.setPosition(4))
         .alongWith(new InstantCommand(()->m_wrist.setPosition(4)))
         .alongWith(new InstantCommand(()->m_claw.setVelocity(-500.0)))
-        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+        .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
     
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
       .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
-          .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
-          .alongWith(new InstantCommand(()->m_claw.setVelocity(2500.0)))
-          .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+          .alongWith(new InstantCommand(()->m_wrist.setPosition(47.8)))
+          .alongWith(new InstantCommand(()->m_claw.setVelocity(3500.0)))
+          .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
           .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))))
       .onFalse(new InstantCommand(()->m_elevator.setPosition(4))
           .alongWith(new InstantCommand(()->m_wrist.setPosition(4)))
           .alongWith(new InstantCommand(()->m_claw.setVelocity(100.0)))
-          .alongWith(new InstantCommand(()->m_drive.changeSlewRate(7.0, 11.0)))
+          .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
           .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
 
     new JoystickButton(m_driverController, Button.kA.value).whileTrue(m_dock);
