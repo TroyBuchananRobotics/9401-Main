@@ -189,13 +189,13 @@ public class RobotContainer {
     new JoystickRightTrigger(m_driverController).onTrue(new InstantCommand(()->m_claw.setVelocity(-4000))).onFalse(new InstantCommand(()->m_claw.setVelocity(-500.0)));
     
     new JoystickButton(m_driverController, Button.kX.value)
-          .onTrue(new InstantCommand(()->m_elevator.setPosition(81.4))
+          .onTrue(new InstantCommand(()->m_elevator.setPosition(80.9))
             .alongWith(new InstantCommand(()->m_wrist.setPosition(48.5)))
             .alongWith(new InstantCommand(()->m_drive.changeSlewRate(4.0, 9.0)))
             .alongWith(new InstantCommand(()->m_drive.setSpeedScale(0.35))));
     
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
+      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.2))
         .alongWith(new InstantCommand(()->m_wrist.setPosition(48.0)))
         .alongWith(new InstantCommand(()->m_claw.setVelocity(-4000.0)))
         .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))
@@ -207,7 +207,7 @@ public class RobotContainer {
         .alongWith(new InstantCommand(()->m_drive.setSpeedScale(1.0))));
     
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
-      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.6))
+      .onTrue(new InstantCommand(()->m_elevator.setPosition(4.2))
           .alongWith(new InstantCommand(()->m_wrist.setPosition(47.8)))
           .alongWith(new InstantCommand(()->m_claw.setVelocity(3500.0)))
           .alongWith(new InstantCommand(()->m_drive.changeSlewRate(9.0, 13.0)))

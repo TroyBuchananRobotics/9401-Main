@@ -18,6 +18,7 @@ public class Claw extends SubsystemBase{
     private final SparkMaxPIDController m_PID = m_motor.getPIDController();
 
     private double m_velocity = 0.0;
+    
     public Claw(){
         m_motor.setSmartCurrentLimit(CurrentLimit.kClaw);
         m_motor.enableVoltageCompensation(GlobalConstants.kVoltCompensation);
